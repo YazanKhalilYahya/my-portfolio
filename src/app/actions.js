@@ -1,13 +1,20 @@
 "use server";
 
-import { Resend } from "resend";
+export async function sendContactEmail(formData) {
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.CONTACT_FROM_EMAIL;
+  const to = process.env.CONTACT_TO_EMAIL;
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+  if (!apiKey || !from || !to) {
+    return {
+      success: false,
+      message: "Email service is not configured correctly.",
+    };
+  }
 
-export async function sendContactEmail(prevState, formData) {
-  const name = String(formData.get("name") || "").trim();
-  const email = String(formData.get("email") || "").trim();
-  const message = String(formData.get("message") || "").trim();
+  const name = formData.get("name")?.toString().trim() || "";
+  const email = formData.get("email")?.toString().trim() || "";
+  const message = formData.get("message")?.toString().trim() || "";
 
   if (!name || !email || !message) {
     return {
@@ -26,32 +33,34 @@ export async function sendContactEmail(prevState, formData) {
   }
 
   try {
-    await resend.emails.send({
-      from: process.env.CONTACT_FROM_EMAIL,
-      to: process.env.CONTACT_TO_EMAIL,
+    const { Resend } = await import("resend");
+    const resend = new Resend(apiKey);
+
+    const result = await resend.emails.send({
+      from,
+      to,
       replyTo: email,
-      subject: `New portfolio message from ${name}`,
-      html: `
-        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #111;">
-          <h2>New message from your portfolio</h2>
-          <p><strong>Name:</strong> ${name}</p>
-          <p><strong>Email:</strong> ${email}</p>
-          <p><strong>Message:</strong></p>
-          <p>${message.replace(/\n/g, "<br />")}</p>
-        </div>
-      `,
+      subject: `Portfolio message from ${name}`,
+      text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
     });
+
+    if (result?.error) {
+      return {
+        success: false,
+        message: "Failed to send message. Please try again.",
+      };
+    }
 
     return {
       success: true,
-      message: "Awesome — your message reached me successfully 🎉",
+      message: "Message sent successfully.",
     };
   } catch (error) {
-    console.error("Resend error:", error);
+    console.error("Contact form error:", error);
 
     return {
       success: false,
-      message: "Something went wrong. Please try again.",
+      message: "Something went wrong while sending your message.",
     };
   }
 }
