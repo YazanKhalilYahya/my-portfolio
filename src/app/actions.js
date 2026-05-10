@@ -1,6 +1,6 @@
 "use server";
 
-export async function sendContactEmail(formData) {
+export async function sendContactEmail(prevState, formData) {
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.CONTACT_FROM_EMAIL;
   const to = process.env.CONTACT_TO_EMAIL;
@@ -45,6 +45,8 @@ export async function sendContactEmail(formData) {
     });
 
     if (result?.error) {
+      console.error("Resend error:", result.error);
+
       return {
         success: false,
         message: "Failed to send message. Please try again.",
