@@ -631,25 +631,25 @@ export default function Home() {
               rel="noopener noreferrer"
               aria-label="GitHub"
             >
-              <FaGithub size={18} />
+              <FaGithub size={20} />
             </a>
 
             <a
-              href="https://instagram.com/yazan_yahya_98"
+              href="https://instagram.com/yazanyahya.dev"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"
             >
-              <FaInstagram size={18} />
+              <FaInstagram size={20} />
             </a>
 
             <a
-              href="https://www.youtube.com/"
+              href="https://www.youtube.com/@YazanYahya-dev"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="YouTube"
             >
-              <FaYoutube size={18} />
+              <FaYoutube size={20} />
             </a>
           </div>
         </div>
